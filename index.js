@@ -1,9 +1,14 @@
-
 Array.prototype.Transpose = function() {
-
+    for(let i = 0; i < this.length; i++) {
+        for(let j=0;j<i;j++)
+        {
+            let temp = this[i][j];
+            this[i][j] = this[j][i];
+            this[j][i] = temp;
+        }
+    }
+    return this;
 }
-
-
 function solve()
 {
     let table = document.querySelector('table');

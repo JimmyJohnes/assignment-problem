@@ -2,19 +2,20 @@ body
 {
     display: grid;
     justify-content: center;
+    background-color: rgb(123, 123, 123);
 }
-td{
-    border: 1px solid black;
-    border-radius: 11px;
-    height: 10vh;
-    margin: 12px; 
-    box-shadow: 5px 5px 15px gray;
-}
+
 td input
 {
+    text-align: center;
     height: 10vh;
-   font-size: 1.2rem; 
+    width: 10vw;
+    margin: 5px; 
     border: none;
-    background-color: unset;
+    box-shadow: 5px 5px 15px rgba(194, 194, 194, 0.616);
+    height: 10vh;
+    border-radius: 11px;
+    font-size: 1.2rem; 
+    background-color: rgb(200, 200, 200);
     border-radius: 11px;
 }
