@@ -36,7 +36,42 @@ function Subtract(arr)
         }
     }
 }
+function countZeros(arr)
+{
+    let temp = [];
+    let weightMatrix = [];
+    for(let i in arr)
+    {
+        let ct=0;
+        for(let j in arr[i])
+        {
+            if(arr[i][j] == 0)
+            {
+                ct++;
+            }
+        }
+        temp.push(ct);
+    }
+    weightMatrix.push(temp);
+    temp = [];
+    for(let i in arr)
+    {
+        let ct=0;
+        for(let j in arr[i])
+        {
+            if(arr[j][i] == 0)
+            {
+                ct++;
+            }
+        }
+        temp.push(ct);
+    }
+    weightMatrix.push(temp);
+    return weightMatrix;
+}
+
 let matrix = [];
+let weightMatrix = [];
 let n = localStorage.getItem("n");
 setMatrix();
 function solve()
@@ -44,7 +79,6 @@ function solve()
     /* grab elements from The DOM */
     let stepdiv = document.querySelector("#steps");
     stepdiv.innerHTML = "";
-    stepdiv.innerHTML += "<p>Starting Matrix:</p>";
     let table = document.querySelector('table');
     /* Set up the matrix as global variable */
     for(let i =0 ; i<table.rows.length;i++)
@@ -56,17 +90,28 @@ function solve()
         }
         matrix.push(temp);
     }
-    /* Display The first Matrix */
-    stepdiv.innerHTML += displayMatrix();
-    stepdiv.innerHTML+= "<p>Subtract The Maximum in each Row</p>"
-    Subtract(matrix);
-    stepdiv.innerHTML += displayMatrix();
-    stepdiv.innerHTML+= "<p>Subtract The Maximum in each Column</p>"
-    transpose(matrix);
-    Subtract(matrix);
-    transpose(matrix);
-    stepdiv.innerHTML += displayMatrix();
-
+    let hasEmpty = matrix.filter((row)=> row.includes("")).length > 0;
+    if(!hasEmpty)
+    {
+        stepdiv.innerHTML += "<p>Starting Matrix:</p>";
+        /* Display The first Matrix */
+        stepdiv.innerHTML += displayMatrix();
+        /* Subtract the minimum of each row */
+        stepdiv.innerHTML+= "<p>Subtract The Maximum in each Row</p>"
+        Subtract(matrix);
+        stepdiv.innerHTML += displayMatrix();
+        /* Subtract the minimum of each column */
+        stepdiv.innerHTML+= "<p>Subtract The Maximum in each Column</p>"
+        transpose(matrix);
+        Subtract(matrix);
+        transpose(matrix);
+        stepdiv.innerHTML += displayMatrix();
+        /* TODO: implement line crossing */
+    }
+    else
+    {
+        alert("Please Enter All Values");
+    }
 }
 
 function setMatrix()

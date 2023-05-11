@@ -18,7 +18,7 @@ td input, #in-Steps-Table td
     height: 10vh;
     width: 10vw;
     text-align: center;
-
+    aspect-ratio: 1;
 }
 td input
 {
@@ -26,9 +26,9 @@ td input
     margin: 5px; 
     border: none;
     box-shadow: 5px 5px 15px rgba(194, 194, 194, 0.616);
-    height: 10vh;
     border-radius: 11px;
     font-size: 1.2rem; 
     background-color: rgb(200, 200, 200);
     border-radius: 11px;
+
 }
