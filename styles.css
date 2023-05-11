@@ -3,13 +3,26 @@ body
     display: grid;
     justify-content: center;
     background-color: rgb(123, 123, 123);
+    font-size: 1.2rem;
+    font-family:monospace;
 }
 
-td input
+#in-Steps-Table td
 {
-    text-align: center;
+    border: 1px solid white;
+    padding: 15px;
+    margin: 0;
+}
+td input, #in-Steps-Table td
+{
     height: 10vh;
     width: 10vw;
+    text-align: center;
+
+}
+td input
+{
+    
     margin: 5px; 
     border: none;
     box-shadow: 5px 5px 15px rgba(194, 194, 194, 0.616);
