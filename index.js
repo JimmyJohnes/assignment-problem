@@ -55,21 +55,50 @@ function assignments(arr)
 {
     let assignments = []
     let zeros = [];
+    let lines = [];
     getZeroPosition(arr,zeros);
     while(zeros.length > 0)
     {
         let obj = zeros.pop();
         for(let i=0;i<zeros.length;i++)
         {
-            if(zeros[i][0]==obj[0]||zeros[i][1]==obj[1])
+            if(zeros[i][0]==obj[0])
             {
-                zeros.splice(i,1)
+                zeros.splice(i,1);
+                lines.push({
+                    dir: "H",
+                    row: i
+                });
+                i=0
+            }
+            if(zeros[i][1]==obj[1])
+            {
+                zeros.splice(i,1);
+                lines.push({
+                    dir: "V",
+                    col: i
+                });
                 i=0
             }
         }
         assignments.push(`(${obj[0]},${obj[1]})`)
     }
-    return assignments;
+    return {assignment: assignments, lines: lines};
+}
+function intersections(lines)
+{
+    let intersection = [];
+    for(let i = 0;i<lines.length;i++)
+    {
+        for(let j = i+1;j<lines.length;j++)
+        {
+           if(lines[i].dir == "V"&& lines[j].dir == "H")
+           {
+            intersection.push([i,j]);
+           }
+        }
+    }
+    return intersection;
 }
 let matrix = [];
 let n = localStorage.getItem("n");
@@ -79,6 +108,7 @@ function solve()
     /* grab elements from The DOM */
     let stepdiv = document.querySelector("#steps");
     stepdiv.innerHTML = "";
+    matrix = [];
     let table = document.querySelector('table');
     /* Set up the matrix as global variable */
     for(let i =0 ; i<table.rows.length;i++)
@@ -105,11 +135,15 @@ function solve()
         transpose(matrix);
         Subtract(matrix);
         transpose(matrix);
-        stepdiv.innerHTML += displayMatrix();
         /* assign according to current matrix */
-        let amatrix = assignments(matrix);
+        let {assignment, lines} = assignments(matrix);
+        while(assignment.length!=n)
+        {
+            stepdiv.innerHTML += displayMatrix();
+            stepdiv.innerHTML+= `<p>Assignment According to Current Matrix ${assignment}</p>`;
+            
+        }
 
-            stepdiv.innerHTML+= `<p>Assignment According to Current Matrix ${amatrix}</p>;`
 
     }
     else
