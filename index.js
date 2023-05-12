@@ -39,32 +39,39 @@ function Subtract(arr)
 function countZeros(arr)
 {
     let temp = [];
-    let weightMatrix = [];
     for(let i in arr)
     {
-        let ct=0;
+        let zeros={
+            ct: 0,
+            row: '-',
+            column: '-',
+        };
         for(let j in arr[i])
         {
             if(arr[i][j] == 0)
             {
-                ct++;
+                zeros.ct++;
+                zeros.row = i;
             }
         }
-        temp.push(ct);
+        temp.push(zeros);
     }
-    weightMatrix.push(temp);
-    temp = [];
     for(let i in arr)
     {
-        let ct=0;
+        let zeros={
+            ct: 0,
+            row: '-',
+            column: '-',
+        };
         for(let j in arr[i])
         {
             if(arr[j][i] == 0)
             {
-                ct++;
+                zeros.ct++;
+                zeros.column = i;
             }
         }
-        temp.push(ct);
+        temp.push(zeros);
     }
     weightMatrix.push(temp);
     return weightMatrix;
