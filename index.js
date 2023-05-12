@@ -36,49 +36,42 @@ function Subtract(arr)
         }
     }
 }
-function countZeros(arr)
+function getZeroPosition(arr,zeros)
 {
-    let temp = [];
-    for(let i in arr)
+    for(let i =0;i<arr.length;i++)
     {
-        let zeros={
-            ct: 0,
-            row: '-',
-            column: '-',
-        };
-        for(let j in arr[i])
+       
+        for(let j = 0;j<arr[i].length;j++)
         {
-            if(arr[i][j] == 0)
-            {
-                zeros.ct++;
-                zeros.row = i;
-            }
+          if(arr[i][j] == 0)
+          {
+             let zero = [i,j]
+            zeros.push(zero);
+          }
         }
-        temp.push(zeros);
     }
-    for(let i in arr)
-    {
-        let zeros={
-            ct: 0,
-            row: '-',
-            column: '-',
-        };
-        for(let j in arr[i])
-        {
-            if(arr[j][i] == 0)
-            {
-                zeros.ct++;
-                zeros.column = i;
-            }
-        }
-        temp.push(zeros);
-    }
-    weightMatrix.push(temp);
-    return weightMatrix;
 }
-
+function assignments(arr)
+{
+    let assignments = []
+    let zeros = [];
+    getZeroPosition(arr,zeros);
+    while(zeros.length > 0)
+    {
+        let obj = zeros.pop();
+        for(let i=0;i<zeros.length;i++)
+        {
+            if(zeros[i][0]==obj[0]||zeros[i][1]==obj[1])
+            {
+                zeros.splice(i,1)
+                i=0
+            }
+        }
+        assignments.push(`(${obj[0]},${obj[1]})`)
+    }
+    return assignments;
+}
 let matrix = [];
-let weightMatrix = [];
 let n = localStorage.getItem("n");
 setMatrix();
 function solve()
@@ -113,7 +106,11 @@ function solve()
         Subtract(matrix);
         transpose(matrix);
         stepdiv.innerHTML += displayMatrix();
-        /* TODO: implement line crossing */
+        /* assign according to current matrix */
+        let amatrix = assignments(matrix);
+
+            stepdiv.innerHTML+= `<p>Assignment According to Current Matrix ${amatrix}</p>;`
+
     }
     else
     {
