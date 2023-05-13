@@ -51,39 +51,59 @@ function getZeroPosition(arr,zeros)
         }
     }
 }
-function assignments(arr)
+function removeAllZeros(zeros,obj,roc)
+{
+    for(let j = 0;j<zeros.length;j++)
+    {
+        if(zeros[j][roc] == obj[roc])
+        {
+            zeros.splice(j,1);
+            j=0
+        }
+    }
+}
+function assignments(arr,lines)
 {
     let assignments = []
     let zeros = [];
-    let lines = [];
     getZeroPosition(arr,zeros);
+    
     while(zeros.length > 0)
     {
         let obj = zeros.pop();
+        let jump = 0;
         for(let i=0;i<zeros.length;i++)
         {
-            if(zeros[i][0]==obj[0])
-            {
-                zeros.splice(i,1);
+           if(i<zeros.length&&zeros[i][0] == obj[0])
+           {
+            removeAllZeros(zeros,obj,0)
+                
                 lines.push({
-                    dir: "H",
-                    row: i
-                });
-                i=0
-            }
-            if(zeros[i][1]==obj[1])
-            {
-                zeros.splice(i,1);
+                    dir:"H",
+                    row:obj[0]
+                })
+                i=0;
+           }
+           if(i<zeros.length&&zeros[i][1] == obj[1])
+           {
+                removeAllZeros(zeros,obj,1)
                 lines.push({
-                    dir: "V",
-                    col: i
-                });
-                i=0
-            }
+                    dir:"V",
+                    col:obj[1]
+                })
+                i=0;
+           }
+        }
+        if(zeros.length==0&&obj!=null)
+        {
+            lines.push({
+                dir:"V",
+                row:obj[0]
+            })
         }
         assignments.push(`(${obj[0]},${obj[1]})`)
     }
-    return {assignment: assignments, lines: lines};
+    return assignments;
 }
 function intersections(lines)
 {
@@ -94,11 +114,59 @@ function intersections(lines)
         {
            if(lines[i].dir == "V"&& lines[j].dir == "H")
            {
-            intersection.push([i,j]);
+            intersection.push([lines[j].row,lines[i].col]);
            }
         }
     }
     return intersection;
+}
+function addAndSubtract(arr,lines,intersections)
+{
+    let min = Infinity;
+    
+    /* find the minimum in uncovered cells */
+    for(let i = 0; i<arr.length;i++)
+    {
+        for(let j = 0; j<arr[i].length;j++)
+        {
+            let flag = 0;
+            for(let k = 0; k<lines.length;k++)
+            {
+                if(lines[k].col==j||lines[k].row==i)
+                {
+                    flag=1;
+                }
+            }
+            if(min>arr[i][j]&&!flag)
+            {
+                min= arr[i][j];
+            }
+        }
+    }
+    /* add minimum to intersection cells */
+    for(let i = 0;i<intersections.length;i++)
+    {
+        arr[intersections[i][0]][intersections[i][1]] += min;
+    }
+    /* subtract minimum from uncovered cells */
+    for(let i = 0; i<arr.length;i++)
+    {
+        for(let j = 0; j<arr[i].length;j++)
+        {
+            let flag = 0;
+            for(let k = 0; k<lines.length;k++)
+            {
+                if(lines[k].col==j||lines[k].row==i)
+                {
+                    flag=1;
+                }
+            }
+            if(!flag)
+            {
+                arr[i][j] -= min;
+            }
+        }
+    }
 }
 let matrix = [];
 let n = localStorage.getItem("n");
@@ -127,24 +195,38 @@ function solve()
         /* Display The first Matrix */
         stepdiv.innerHTML += displayMatrix();
         /* Subtract the minimum of each row */
-        stepdiv.innerHTML+= "<p>Subtract The Maximum in each Row</p>"
+        stepdiv.innerHTML+= "<p>Subtract The Minimum in each Row</p>"
         Subtract(matrix);
         stepdiv.innerHTML += displayMatrix();
         /* Subtract the minimum of each column */
-        stepdiv.innerHTML+= "<p>Subtract The Maximum in each Column</p>"
+        stepdiv.innerHTML+= "<p>Subtract The Minimum in each Column</p>"
         transpose(matrix);
         Subtract(matrix);
         transpose(matrix);
         /* assign according to current matrix */
-        let {assignment, lines} = assignments(matrix);
+        let lines = [];
+        let assignment = assignments(matrix,lines);
+        let i = 1;
         while(assignment.length!=n)
         {
             stepdiv.innerHTML += displayMatrix();
-            stepdiv.innerHTML+= `<p>Assignment According to Current Matrix ${assignment}</p>`;
-            
+            stepdiv.innerHTML+= `<hr><h2>Iteration: ${i}</h2>`;
+            i++;
+            stepdiv.innerHTML+= `<p>Assignment According to Current Matrix <span class ="red">${assignment}</span></p>`;
+            if(assignment.length!=n)
+            {
+                stepdiv.innerHTML+= `<p>Since the number of assignments != matrix dimensions then this is not the optimal answer</p>`;
+            }
+            let intersection = intersections(lines);
+            addAndSubtract(matrix,lines,intersection);
+            lines = [];
+            assignment = assignments(matrix,lines);
+            stepdiv.innerHTML += displayMatrix();
+            stepdiv.innerHTML+= `<p>Assignment According to Current Matrix <span class="red">${assignment}</span></p>`;
+
         }
 
-
+        
     }
     else
     {
@@ -162,7 +244,7 @@ function setMatrix()
         row+="<tr>";
         for(let j=0;j<n;j++)
         {
-            row+=`<td><input type = "text" id="i${i}${j}" placeholder="0" /></td>`;
+            row+=`<td><input type = "text" id="i${i}${j}" value="0" /></td>`;
         }
         row+="</tr>";
     }
