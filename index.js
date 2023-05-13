@@ -71,19 +71,10 @@ function assignments(arr,lines)
     while(zeros.length > 0)
     {
         let obj = zeros.pop();
-        let jump = 0;
+        console.log(zeros)
         for(let i=0;i<zeros.length;i++)
         {
-           if(i<zeros.length&&zeros[i][0] == obj[0])
-           {
-            removeAllZeros(zeros,obj,0)
-                
-                lines.push({
-                    dir:"H",
-                    row:obj[0]
-                })
-                i=0;
-           }
+          
            if(i<zeros.length&&zeros[i][1] == obj[1])
            {
                 removeAllZeros(zeros,obj,1)
@@ -93,13 +84,38 @@ function assignments(arr,lines)
                 })
                 i=0;
            }
+            if(i<zeros.length&&zeros[i][0] == obj[0])
+           {
+            removeAllZeros(zeros,obj,0)
+                
+                lines.push({
+                    dir:"H",
+                    row:obj[0]
+                })
+                i=0;
+           }
         }
         if(zeros.length==0&&obj!=null)
         {
-            lines.push({
-                dir:"V",
-                row:obj[0]
-            })
+            let flag=0
+            for(let i =0 ; i<arr[obj[0]].length;i++)
+            {
+                if(arr[obj[0]][i]==0)
+                {
+                    flag=1;
+                    lines.push({
+                        dir:"V",
+                        row:obj[1]
+                    })
+                }
+            }
+            if(!flag)
+            {
+                lines.push({
+                    dir:"H",
+                    row:obj[0]
+                })
+            }
         }
         assignments.push(`(${obj[0]},${obj[1]})`)
     }
@@ -169,6 +185,7 @@ function addAndSubtract(arr,lines,intersections)
     }
 }
 let matrix = [];
+
 let n = localStorage.getItem("n");
 setMatrix();
 function solve()
@@ -188,6 +205,7 @@ function solve()
         }
         matrix.push(temp);
     }
+    let cm = p3 = JSON.parse(JSON.stringify(matrix));
     let hasEmpty = matrix.filter((row)=> row.includes("")).length > 0;
     if(!hasEmpty)
     {
@@ -207,12 +225,15 @@ function solve()
         let lines = [];
         let assignment = assignments(matrix,lines);
         let i = 1;
+        stepdiv.innerHTML += displayMatrix();
+        stepdiv.innerHTML+= `<hr><h2>Iteration: ${i}</h2>`;
+        i++;
+        stepdiv.innerHTML+= `<p>Assignment According to Current Matrix <span class ="red">${assignment}</span></p>`;
+        
         while(assignment.length!=n)
         {
-            stepdiv.innerHTML += displayMatrix();
             stepdiv.innerHTML+= `<hr><h2>Iteration: ${i}</h2>`;
             i++;
-            stepdiv.innerHTML+= `<p>Assignment According to Current Matrix <span class ="red">${assignment}</span></p>`;
             if(assignment.length!=n)
             {
                 stepdiv.innerHTML+= `<p>Since the number of assignments != matrix dimensions then this is not the optimal answer</p>`;
@@ -223,8 +244,25 @@ function solve()
             assignment = assignments(matrix,lines);
             stepdiv.innerHTML += displayMatrix();
             stepdiv.innerHTML+= `<p>Assignment According to Current Matrix <span class="red">${assignment}</span></p>`;
-
         }
+        stepdiv.innerHTML+=`<p>Total Cost: `;
+        let tcost = 0;
+        for(let j = 0;j<assignment.length;j++)
+        {
+            let t = assignment[j].split(",")
+            stepdiv.innerHTML+=`${cm[t[0][1]][t[1][0]]}`;
+            tcost += parseInt(cm[t[0][1]][t[1][0]]);
+            if(j!=assignment.length-1)
+            {
+
+                stepdiv.innerHTML+=`+`;
+            }
+            else
+            {
+                stepdiv.innerHTML+=`= `
+            }
+        }
+        stepdiv.innerHTML+=`${tcost}</p>`;
 
         
     }
@@ -244,7 +282,7 @@ function setMatrix()
         row+="<tr>";
         for(let j=0;j<n;j++)
         {
-            row+=`<td><input type = "text" id="i${i}${j}" value="0" /></td>`;
+            row+=`<td><input type = "text" id="i${i}${j}" placeholder="0" /></td>`;
         }
         row+="</tr>";
     }
